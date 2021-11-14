@@ -1,5 +1,6 @@
 const sendResponse = require("../helpers/sendResponse");
 const Product = require("../models/Product");
+const Cart = require("../models/Cart");
 
 const productController = {};
 
@@ -140,4 +141,39 @@ productController.getSingleProduct = async (req, res, next) => {
     "Successfully get single product"
   );
 };
+
+productController.addReview = async (req, res, next) => {
+  let result;
+  const { rating, comment } = req.body;
+  const { productId } = req.params;
+  try {
+    const product = await Product.findById(productId)
+    if(!product) throw new Error("Product not found")
+    ratingReview.forEach((option) => {
+      if (req.body[option] !== undefined) {
+        updateObject[option] = req.body[option];
+      }
+    });
+    const paidCart = await Cart.findOne({ status: "paid" });
+    if (paidCart.status !== "paid") {throw new Error("Please pay before adding rating and review")}
+    const product = await Product.findByIdAndUpdate(
+      _id,
+      { currentBalance: newBalance },
+      { new: true }
+    );
+  } catch (error) {
+    
+  }
+  return sendResponse(
+    res,
+    200,
+    true,
+    result,
+    false,
+    "Successfully add rating and review to product"
+  );
+}
+
+
+
 module.exports = productController;

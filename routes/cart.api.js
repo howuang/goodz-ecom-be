@@ -15,14 +15,14 @@ const isAdmin = require("../middlewares/isAdmin.middleware");
 const router = express.Router();
 
 /**
- * Description: Update product
- * Access : admin role required
+ * Description: create cart
+ * Access : authenticated user
  */
 router.post("/:productId", authenticationMiddleware, createCart);
 
 /**
- * Description: Update product
- * Access : admin role required
+ * Description: add product to cart
+ * Access : authenticated user
  */
 router.put("/add-product-cart", authenticationMiddleware, addProductToCart);
 
@@ -35,34 +35,34 @@ router.delete(
   authenticationMiddleware,
   removeProductFromCart
 );
-
+ 
 /**
- * Description: Update product
- * Access : admin role required
+ * Description: Delete cart
+ * Access : authenticated user
  */
 router.delete("/:cartId", authenticationMiddleware, deleteCart);
 
 /**
- * Description: Update product
- * Access : admin role required
+ * Description: get single cart
+ * Access : admin
  */
-router.get("/single-cart", authenticationMiddleware, getSingleCart);
+router.get("/single-cart", authenticationMiddleware, isAdmin, getSingleCart);
 
 /**
- * Description: Update product
+ * Description: Get all carts
  * Access : admin role required
  */
 router.get("/", authenticationMiddleware, isAdmin, getAll);
 
 /**
- * Description: Update product
- * Access : admin role required
+ * Description: Get all own cart
+ * Access : authenticated user
  */
 router.get("/me", authenticationMiddleware, getAllOwn);
 
 /**
- * Description: Update product
- * Access : admin role required
+ * Description: Pay cart
+ * Access : authenticated user
  */
 router.put("/payment/:cartId", authenticationMiddleware, payCart);
 module.exports = router;

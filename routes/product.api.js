@@ -21,6 +21,7 @@ router.get("/", getAllProduct);
  */
 
 router.get("/:productId", getSingleProduct);
+
 /**
  * Description:  Create product
  * Access : Admin require

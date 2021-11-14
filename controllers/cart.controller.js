@@ -88,7 +88,7 @@ cartController.addProductToCart = async (req, res, next) => {
     true,
     body,
     false,
-    "Successfully create shopping cart"
+    "Successfully add product to shopping cart"
   );
 };
 
@@ -129,7 +129,7 @@ cartController.removeProductFromCart = async (req, res, next) => {
     true,
     result,
     false,
-    "Successfully create shopping cart"
+    "Successfully removed product from shopping cart"
   );
 };
 
