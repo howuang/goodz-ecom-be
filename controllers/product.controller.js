@@ -145,22 +145,29 @@ productController.getSingleProduct = async (req, res, next) => {
 productController.addReview = async (req, res, next) => {
   let result;
   const { rating, comment } = req.body;
+  console.log({rating, comment});
   const { productId } = req.params;
   try {
     const product = await Product.findById(productId)
     if(!product) throw new Error("Product not found")
-    ratingReview.forEach((option) => {
-      if (req.body[option] !== undefined) {
-        updateObject[option] = req.body[option];
-      }
-    });
-    const paidCart = await Cart.findOne({ status: "paid" });
-    if (paidCart.status !== "paid") {throw new Error("Please pay before adding rating and review")}
-    const product = await Product.findByIdAndUpdate(
-      _id,
-      { currentBalance: newBalance },
-      { new: true }
-    );
+    if (product) {
+      const alreadyReviewed = product.reviews.find((review) => 
+        review.user.toString() ===req.user._id.toString()
+      )
+      if (alreadyReviewed){throw new Error("Product already reviewed")}
+    }
+    const review = {
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      user: req.user._id,
+    }
+
+    product.numReviews = product.views.length;
+    product.rating = product.reviews.length((acc, item) => item.rating + acc, 0) / product.reviews.length;
+    result = await product.findByIdAndUpdate(productId, review, {
+      new: true,
+    })
   } catch (error) {
     
   }

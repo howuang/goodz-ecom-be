@@ -5,6 +5,7 @@ const {
   updateProduct,
   getSingleProduct,
   deleteProduct,
+  addReview,
 } = require("../controllers/product.controller");
 const authenticationMiddleware = require("../middlewares/auth.middleware");
 const isAdmin = require("../middlewares/isAdmin.middleware");
@@ -33,6 +34,12 @@ router.post("/", authenticationMiddleware, isAdmin, createProduct);
  * Access : admin role required
  */
 router.put("/:productId", authenticationMiddleware, isAdmin, updateProduct);
+
+/**
+ * Description: Add review
+ * Access : authenticated user
+ */
+router.put("/:productId/reviews", authenticationMiddleware, addReview);
 
 /**
  * Description: Delete product
