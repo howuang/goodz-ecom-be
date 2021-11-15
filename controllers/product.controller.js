@@ -142,44 +142,86 @@ productController.getSingleProduct = async (req, res, next) => {
   );
 };
 
-productController.addReview = async (req, res, next) => {
-  let result;
-  const { rating, comment } = req.body;
-  console.log({rating, comment});
-  const { productId } = req.params;
-  try {
-    const product = await Product.findById(productId)
-    if(!product) throw new Error("Product not found")
-    if (product) {
-      const alreadyReviewed = product.reviews.find((review) => 
-        review.user.toString() ===req.user._id.toString()
-      )
-      if (alreadyReviewed){throw new Error("Product already reviewed")}
-    }
-    const review = {
-      name: req.user.name,
-      rating: Number(rating),
-      comment,
-      user: req.user._id,
-    }
+// productController.addReview = async (req, res, next) => {
+//   let result;
+//   const { rating, comment } = req.body;
+//   console.log({rating, comment});
+//   const { productId } = req.params;
+//   try {
+//     const product = await Product.findById(productId)
+//     if(!product) throw new Error("Product not found")
+//     if (product) {
+//       const alreadyReviewed = product.reviews.find((review) => 
+//         review.user.toString() ===req.user._id.toString()
+//       )
+//       if (alreadyReviewed){throw new Error("Product already reviewed")}
+//     }
+//     const review = {
+//       name: req.user.name,
+//       rating: Number(rating),
+//       comment,
+//       user: req.user._id,
+//     }
 
-    product.numReviews = product.views.length;
-    product.rating = product.reviews.length((acc, item) => item.rating + acc, 0) / product.reviews.length;
-    result = await product.findByIdAndUpdate(productId, review, {
-      new: true,
-    })
-  } catch (error) {
+//     product.numReviews = product.views.length;
+//     product.rating = product.reviews.length((acc, item) => item.rating + acc, 0) / product.reviews.length;
+//     result = await product.findByIdAndUpdate(productId, review, {
+//       new: true,
+//     })
+//   } catch (error) {
     
+//   }
+//   return sendResponse(
+//     res,
+//     200,
+//     true,
+//     result,
+//     false,
+//     "Successfully add rating and review to product"
+//   );
+// }
+
+productController.rateProduct = async (req, res, next) => {
+  let result;
+  try {
+    const author = req.currentUser._id;
+    let { rate } = req.body;
+    const { productId } = req.params;
+    const found = await Product.findById(productId);
+    if (!found) throw new Error("Product not found");
+    ///check if current user has bought this item
+    const isPaid = await Cart.findOne({
+      owner: author,
+      status: "paid",
+      "products.productId": productId,
+    });
+    console.log("test", isPaid);
+    if (!isPaid) throw new Error("buy first rate later");
+    rate = parseInt(rate);
+    if (!rate || typeof rate !== "number" || rate < 1) {
+      throw new Error("Invalid rate");
+    }
+    const newRating = {
+      author,
+      rate,
+    };
+    found.ratings.push(newRating);
+
+    let newAverage = found.ratings.reduce((acc, cur) => acc + cur.rate, 0);
+    newAverage /= found.ratings.length;
+
+    result = await Product.findByIdAndUpdate(
+      productId,
+      { ratings: found.ratings, averageRate: newAverage },
+      {
+        new: true,
+      }
+    );
+  } catch (error) {
+    return next(error);
   }
-  return sendResponse(
-    res,
-    200,
-    true,
-    result,
-    false,
-    "Successfully add rating and review to product"
-  );
-}
+  return sendResponse(res, 200, true, result, false, "Success rate a product");
+};
 
 
 
