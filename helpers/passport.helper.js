@@ -21,7 +21,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/api/users/login/googleok",
+      callbackURL: "https://ecombe-hoang.herokuapp.com/api/users/login/googleok",
     },
     (accessToken, refreshToken, profile, cb) => {
       return cb(null, profile);
@@ -34,7 +34,7 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/api/users/login/facebookok",
+      callbackURL: "https://ecombe-hoang.herokuapp.com/api/users/login/facebookok",
       profileFields: ["id", "email", "displayName"],
     },
       (accessToken, refreshToken, profile, done) => {

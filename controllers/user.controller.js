@@ -45,7 +45,7 @@ userController.createByEmailPassword = async (req, res, next) => {
     const salt = await bcrypt.genSalt(SALT_ROUND);
     password = await bcrypt.hash(password, salt);
     let code = generateHex(12);
-    let link = `http://localhost:5000/api/users/emailverification/${code}`;
+    let link = `https://ecombe-hoang.herokuapp.com/api/users/emailverification/${code}`;
     result = await User.create({ name, email, password, emailVerificationCode: code });
 
     const content = {

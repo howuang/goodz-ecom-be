@@ -4,7 +4,7 @@ const fakeUser = require("./createUser");
 const emailHelper = require("./helpers/email.helper");
 
 const MONGO_URI = process.env.MONGO_URI
-// const MONGO_URI = `mongodb+srv//localhost:21707`;
+// const MONGO_URI = `mongodb+srv://localhost:21707`;
 
 mongoose.Promise = global.Promise;
 
