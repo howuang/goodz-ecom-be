@@ -1,6 +1,7 @@
 const sendResponse = require("../helpers/sendResponse");
-const Product = require("../models/Product");
 const Cart = require("../models/Cart");
+const Comment = require("../models/Comment");
+const Product = require("../models/Product");
 
 const productController = {};
 
@@ -44,7 +45,6 @@ productController.createProduct = async (req, res, next) => {
 
   return sendResponse(res, 200, true, result, false, "success");
 };
-
 productController.getAllProduct = async (req, res, next) => {
   let { limit, page, ...filter } = req.query;
   limit = parseInt(req.query.limit) || 5;
@@ -70,7 +70,6 @@ productController.getAllProduct = async (req, res, next) => {
     "Successfully get all product"
   );
 };
-
 productController.updateProduct = async (req, res, next) => {
   let result;
   const allowOptions = ["name", "stock", "price"];
@@ -123,12 +122,16 @@ productController.deleteProduct = async (req, res, next) => {
   );
 };
 productController.getSingleProduct = async (req, res, next) => {
-  let result;
-
+  let result = {};
+  let comments;
   const { productId } = req.params;
   try {
     if (!productId) throw new Error("product not found, or deleted");
     result = await Product.findById(productId);
+    comments = await Comment.find({ targetProduct: productId }).populate(
+      "author",
+      "name"
+    );
   } catch (error) {
     return next(error);
   }
@@ -136,50 +139,11 @@ productController.getSingleProduct = async (req, res, next) => {
     res,
     200,
     true,
-    result,
+    { result, comments },
     false,
     "Successfully get single product"
   );
 };
-
-// productController.addReview = async (req, res, next) => {
-//   let result;
-//   const { rating, comment } = req.body;
-//   console.log({rating, comment});
-//   const { productId } = req.params;
-//   try {
-//     const product = await Product.findById(productId)
-//     if(!product) throw new Error("Product not found")
-//     if (product) {
-//       const alreadyReviewed = product.reviews.find((review) => 
-//         review.user.toString() ===req.user._id.toString()
-//       )
-//       if (alreadyReviewed){throw new Error("Product already reviewed")}
-//     }
-//     const review = {
-//       name: req.user.name,
-//       rating: Number(rating),
-//       comment,
-//       user: req.user._id,
-//     }
-
-//     product.numReviews = product.views.length;
-//     product.rating = product.reviews.length((acc, item) => item.rating + acc, 0) / product.reviews.length;
-//     result = await product.findByIdAndUpdate(productId, review, {
-//       new: true,
-//     })
-//   } catch (error) {
-    
-//   }
-//   return sendResponse(
-//     res,
-//     200,
-//     true,
-//     result,
-//     false,
-//     "Successfully add rating and review to product"
-//   );
-// }
 
 productController.rateProduct = async (req, res, next) => {
   let result;
@@ -222,7 +186,5 @@ productController.rateProduct = async (req, res, next) => {
   }
   return sendResponse(res, 200, true, result, false, "Success rate a product");
 };
-
-
 
 module.exports = productController;

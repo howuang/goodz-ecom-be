@@ -88,7 +88,7 @@ cartController.addProductToCart = async (req, res, next) => {
     true,
     body,
     false,
-    "Successfully add product to shopping cart"
+    "Successfully create shopping cart"
   );
 };
 
@@ -129,7 +129,7 @@ cartController.removeProductFromCart = async (req, res, next) => {
     true,
     result,
     false,
-    "Successfully removed product from shopping cart"
+    "Successfully create shopping cart"
   );
 };
 
@@ -202,9 +202,30 @@ cartController.payCart = async (req, res, next) => {
   const { cartId } = req.params;
 
   const { currentBalance, _id } = req.currentUser;
-  console.log(_id);
+
   try {
-    const found = await Cart.findById(cartId).populate("products.productId");
+    let found = await Cart.findById(cartId).populate("products.productId");
+
+    const productsToUpdate = await Promise.all(
+      found.products.map(async (request) => {
+        const existed = await Product.findById(request.productId._id);
+        let newStock = existed.stock;
+        if (request.qty <= existed.stock) {
+          newStock = existed.stock - request.qty;
+        } else {
+          console.log(
+            "Sold out",
+            request.productId.name,
+            request.qty,
+            existed.stock
+          );
+          throw new Error("Sold out product");
+        }
+
+        return { _id: existed._id, newStock };
+      })
+    );
+
     const total = found.products.reduce(
       (acc, cur) => acc + cur.qty * cur.productId.price,
       0
@@ -225,6 +246,15 @@ cartController.payCart = async (req, res, next) => {
       { new: true }
     );
     result.currentBalance = user.currentBalance;
+
+    //update the stock
+    await Promise.all(
+      productsToUpdate.map(async (product) => {
+        await Product.findByIdAndUpdate(product._id, {
+          stock: product.newStock,
+        });
+      })
+    );
   } catch (error) {
     return next(error);
   }

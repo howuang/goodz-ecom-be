@@ -6,7 +6,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const indexRouter = require("./routes/index");
 const sendResponse = require("./helpers/sendResponse");
-
+const session = require("express-session");
 const app = express();
 
 app.use(logger("dev"));
@@ -15,7 +15,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
-
+app.use(
+  session({
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+const passport = require("passport");
+app.use(passport.initialize());
+app.use(passport.session());
+require("./helpers/passport.helper");
 // Mongo connect
 require("./mongo");
 

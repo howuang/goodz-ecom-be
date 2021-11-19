@@ -1,10 +1,9 @@
 const faker = require("faker");
 const Product = require("./models/Product");
-const numberOfProduct = 10;
+const numberOfProduct = 100;
 
 const createProduct = async () => {
   console.log("Creating some products");
-
   for (let index = 0; index < numberOfProduct; index++) {
     const singleProduct = {
       name: faker.commerce.product(),
