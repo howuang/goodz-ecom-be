@@ -64,12 +64,9 @@ cartController.addProductToCart = async (req, res, next) => {
   // => Find by id and update by found
   const owner = req.currentUser._id; //safe
   const body = req.body;
-
   let result; //safe
-
   try {
     const cartToUpdate = await Cart.findOne({ owner, status: "active" });
-
     body.map((product) => {
       const qty = parseInt(product.qty); //check
       const productId = product.productId; //check

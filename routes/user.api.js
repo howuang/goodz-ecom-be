@@ -48,6 +48,7 @@ router.put(
 
 router.get("/me", authenticationMiddleware, getCurrentUser);
 
+
 router.put("/reset-password", resetPassword);
 
 router.get("/emailverification/:code", verifyEmail);
