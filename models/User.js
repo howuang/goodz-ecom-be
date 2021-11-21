@@ -10,20 +10,6 @@ const userSchema = Schema(
     isDeleted: { type: Boolean, default: false },
     role: { type: String, enum: ["admin", "guest"], default: "guest" },
     currentBalance: { type: Number, default: 0 },
-    cart: {
-      status: { type: String, enum: ["active", "paid"], default: "active" },
-      products: [
-        {
-          productId: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: "Product",
-          },
-          qty: { type: Number, required: true },
-        },
-      ],
-      isDeleted: { type: Boolean, default: false },
-    },
     avatar: String,
     emailVerificationCode: String,
     isEmailVerified: { type: Boolean, default: false },
