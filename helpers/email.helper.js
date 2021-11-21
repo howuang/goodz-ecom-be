@@ -29,7 +29,7 @@ emailHelper.sendTestEmail = async () => {
 
 emailHelper.createTemplatesIfNotExists = async () => {
     try {
-        let found = await Template.findOne({ template_key: "verify email" });
+        let found = await Template.findOne({ template_key: "verify_email" });
         if (!found) {
             const newTemplate = {
                 name: "Verify Email Template",

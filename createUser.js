@@ -1,6 +1,6 @@
 const faker = require('faker');
 const User = require("./models/User")
-const numberOfUser = 100;
+const numberOfUser = 50;
 const bcrypt = require('bcrypt');
 const SALT_ROUND = parseInt(process.env.SALT_ROUND);
 const fs = require('fs');

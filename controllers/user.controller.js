@@ -5,6 +5,8 @@ const User = require("../models/User");
 const { uploader } = require("../helpers/cloudinaryConfig");
 const { send, createSingleEmailFromTemplate } = require("../helpers/email.helper");
 const generateHex = require("../helpers/generateHex");
+const jwt = require("jsonwebtoken");
+const JWT_MY_SECRET = process.env.JWT_MY_SECRET;
 
 const userController = {};
 const SALT_ROUND = parseInt(process.env.SALT_ROUND);
@@ -47,7 +49,6 @@ userController.createByEmailPassword = async (req, res, next) => {
     let code = generateHex(12);
     let link = `https://ecombe-hoang.herokuapp.com/api/users/emailverification/${code}`;
     result = await User.create({ name, email, password, emailVerificationCode: code });
-
     const content = {
       name,
       link,
@@ -75,6 +76,7 @@ userController.loginWithEmailPassword = async (req, res, next) => {
     if (!email || !password) throw new Error("Please input email and pass");
     const user = await User.findOne({ email, isDeleted: false });
     if (!user) throw new Error("User with the email is not found");
+    if(user.isEmailVerified !== true) throw new Error("Please verify your email");
     let isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       result = await user.generateToken();
@@ -178,14 +180,12 @@ userController.createWithGoogle = async (req, res, next) => {
     if (found) throw new Error("User already registered");
     const salt = await bcrypt.genSalt(SALT_ROUND);
     let password = await bcrypt.hash("abc", salt);
-
     const newUser = {
       name: userInfo.displayName,
       avatar: userInfo.photos[0].value,
       email: userInfo.emails[0].value,
       password,
     };
-
     result = await User.create(newUser);
   } catch (error) {
     return next(error);
@@ -239,7 +239,7 @@ userController.verifyEmail = async (req, res, next) => {
     const emailVerificationCode = req.params.code;
     const found = await User.findOne({ emailVerificationCode });
     if (!found) throw new Error("Email not found");
-    result = await User.findOneAndUpdate({ email: found.email }, { isEmailVerified: true });
+    result = await User.findOneAndUpdate({ email: found.email }, { isEmailVerified: true }, { new: true });
   } catch (error) {
     return next(error);
   };
@@ -251,6 +251,24 @@ userController.verifyEmail = async (req, res, next) => {
     false,
     "Successfully verify email"
   )
+};
+
+userController.getCurrentUser = async (req, res, next) => {
+  let result;
+  try {
+    result = await User.findById(req.currentUser._id);
+    console.log(result, "test user")
+  } catch (error) {
+    return next(error);
+  }
+  return sendResponse(
+    res,
+    200,
+    true,
+    result,
+    false,
+    "Successfully get current user"
+  );
 }
 
 

@@ -47,7 +47,7 @@ productController.createProduct = async (req, res, next) => {
 };
 productController.getAllProduct = async (req, res, next) => {
   let { limit, page, ...filter } = req.query;
-  limit = parseInt(req.query.limit) || 5;
+  limit = parseInt(req.query.limit) || 10;
   page = parseInt(req.query.page) || 1;
   let count = 0;
   let result;

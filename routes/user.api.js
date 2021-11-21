@@ -13,6 +13,7 @@ const {
   createWithFacebook,
   verifyEmail,
   resetPassword,
+  getCurrentUser,
 } = require("../controllers/user.controller");
 const imageUploadMiddleware = require("../middlewares/imageUpload.middleware");
 
@@ -37,12 +38,15 @@ router.post("/login", loginWithEmailPassword);
  * Description:  destroy the world
  * Access : authenticated user
  */
+
 router.put(
   "/update-me",
   authenticationMiddleware,
   imageUploadMiddleware.single("image"),
   updateById
 );
+
+router.get("/me", authenticationMiddleware, getCurrentUser);
 
 router.put("/reset-password", resetPassword);
 

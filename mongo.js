@@ -21,8 +21,8 @@ mongoose.connect(
       // fakeUser();
       // fakeProduct();
       // fakeProduct(); comment out to no longer run
-      // emailHelper.createTemplatesIfNotExists();
-      // emailHelper.createResetPasswordTemplate();
+      emailHelper.createTemplatesIfNotExists();
+      emailHelper.createResetPasswordTemplate();
     } else {
       console.log("Error in DB connection: " + err);
     }
