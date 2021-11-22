@@ -177,7 +177,12 @@ userController.createWithGoogle = async (req, res, next) => {
   //from userInfo input , create a account in my database
   try {
     const found = await User.findOne({ email: userInfo.emails[0].value });
-    if (found) throw new Error("User already registered");
+    if (found) {
+      let isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        result = await found.generateToken();
+      }
+    };
     const salt = await bcrypt.genSalt(SALT_ROUND);
     let password = await bcrypt.hash("abc", salt);
     const newUser = {

@@ -67,13 +67,14 @@ cartController.addProductToCart = async (req, res, next) => {
   let result; //safe
   try {
     const cartToUpdate = await Cart.findOne({ owner, status: "active" });
-    
+
     body.map((product) => {
       const qty = parseInt(product.qty); //check
       const productId = product.productId; //check
       //check if valid in here
       cartToUpdate.products.push({ productId, qty });
     });
+    
     result = await Cart.findByIdAndUpdate(cartToUpdate._id, cartToUpdate, {
       new: true,
     });
@@ -86,7 +87,7 @@ cartController.addProductToCart = async (req, res, next) => {
     true,
     body,
     false,
-    "Successfully create shopping cart"
+    "Successfully add product to shopping cart"
   );
 };
 

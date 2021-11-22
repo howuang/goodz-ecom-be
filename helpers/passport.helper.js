@@ -21,7 +21,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://ecombe-hoang.herokuapp.com/api/users/login/googleok",
+      callbackURL: "https://nostalgic-clarke-e39038.netlify.app/login",
     },
     (accessToken, refreshToken, profile, cb) => {
       return cb(null, profile);
@@ -34,7 +34,7 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: "https://ecombe-hoang.herokuapp.com/api/users/login/facebookok",
+      callbackURL: "https://nostalgic-clarke-e39038.netlify.app/login",
       profileFields: ["id", "email", "displayName"],
     },
       (accessToken, refreshToken, profile, done) => {
